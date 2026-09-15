@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>지렁이 게임</title>
+  <style>
+    :root {
+      --bg: #12161c;
+      --panel: #1b212b;
+      --line: #232b36;
+      --text: #e7ecf3;
+      --muted: #8b97a8;
+      --snake: #4ade80;
+      --head: #22c55e;
+      --food: #f87171;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", "Malgun Gothic", system-ui, sans-serif;
+      user-select: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1px;
+    }
+
+    #score {
+      font-size: 18px;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+    }
+
+    #score strong {
+      color: var(--text);
+      font-size: 22px;
+    }
+
+    #board {
+      background: var(--panel);
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      display: block;
+    }
+
+    #help {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    kbd {
+      background: var(--line);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <h1>🐛 지렁이 게임</h1>
+  <div id="score">점수 <strong id="score-value">0</strong></div>
+  <canvas id="board" width="400" height="400"></canvas>
+  <div id="help">
+    <kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd> 또는 <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> 로 이동<br>
+    <kbd>Space</kbd> 일시정지 · 게임 오버 후 <kbd>Space</kbd> / <kbd>Enter</kbd> 로 재시작
+  </div>
+
+  <script>
+    // ── 상수 ────────────────────────────────────────────────
+    const GRID = 20;        // 가로/세로 칸 수
+    const CELL = 20;        // 한 칸의 픽셀 크기
+    const SPEED_MS = 125;   // 한 칸 이동에 걸리는 시간 (초당 8칸)
+
+    const DIRECTIONS = {
+      up:    { x: 0,  y: -1 },
+      down:  { x: 0,  y: 1  },
+      left:  { x: -1, y: 0  },
+      right: { x: 1,  y: 0  },
+    };
+
+    const OPPOSITE = { up: 'down', down: 'up', left: 'right', right: 'left' };
+
+    const KEY_TO_DIRECTION = {
+      ArrowUp: 'up',    KeyW: 'up',
+      ArrowDown: 'down',  KeyS: 'down',
+      ArrowLeft: 'left',  KeyA: 'left',
+      ArrowRight: 'right', KeyD: 'right',
+    };
+
+    // ── 상태 ────────────────────────────────────────────────
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+    const scoreValue = document.getElementById('score-value');
+
+    let snake;          // [{x, y}, ...]  index 0 이 머리
+    let direction;      // 이번 틱에 확정된 진행 방향
+    let nextDirection;  // 입력으로 예약된 방향
+    let food;           // {x, y}
+    let score;
+    let state;          // 'playing' | 'paused' | 'over'
+
+    function resetGame() {
+      const mid = Math.floor(GRID / 2);
+      // 길이 3, 중앙에서 오른쪽을 향해 시작
+      snake = [
+        { x: mid,     y: mid },
+        { x: mid - 1, y: mid },
+        { x: mid - 2, y: mid },
+      ];
+      direction = 'right';
+      nextDirection = 'right';
+      score = 0;
+      state = 'playing';
+      spawnFood();
+      updateScore();
+    }
+
+    function updateScore() {
+      scoreValue.textContent = score;
+    }
+
+    // 지렁이가 차지하지 않은 빈 칸들 중에서 하나를 무작위로 선택한다.
+    // (무한 재시도 루프 대신 후보 목록을 만들어 겹칠 가능성을 원천 차단)
+    function spawnFood() {
+      const occupied = new Set(snake.map(s => s.y * GRID + s.x));
+      const empty = [];
+      for (let y = 0; y < GRID; y++) {
+        for (let x = 0; x < GRID; x++) {
+          if (!occupied.has(y * GRID + x)) empty.push({ x, y });
+        }
+      }
+      if (empty.length === 0) { food = null; return; } // 화면을 가득 채운 경우
+      food = empty[Math.floor(Math.random() * empty.length)];
+    }
+
+    // ── 게임 로직 ───────────────────────────────────────────
+    function step() {
+      // 예약된 방향을 이 시점에 확정한다.
+      // (한 틱 안에 두 번 꺾어서 자기 몸으로 들어가는 버그 방지)
+      direction = nextDirection;
+
+      const delta = DIRECTIONS[direction];
+      const head = { x: snake[0].x + delta.x, y: snake[0].y + delta.y };
+
+      // 벽 충돌
+      if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
+        state = 'over';
+        return;
+      }
+
+      const ate = food && head.x === food.x && head.y === food.y;
+
+      // 자기 몸 충돌 — 먹이를 먹지 않으면 꼬리는 이번 틱에 빠지므로 검사에서 제외
+      const bodyLength = ate ? snake.length : snake.length - 1;
+      for (let i = 0; i < bodyLength; i++) {
+        if (snake[i].x === head.x && snake[i].y === head.y) {
+          state = 'over';
+          return;
+        }
+      }
+
+      snake.unshift(head);
+      if (ate) {
+        score += 10;
+        updateScore();
+        spawnFood();
+      } else {
+        snake.pop();
+      }
+    }
+
+    // ── 렌더링 ──────────────────────────────────────────────
+    function draw() {
+      // 배경
+      ctx.fillStyle = '#1b212b';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 격자
+      ctx.strokeStyle = '#232b36';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let i = 1; i < GRID; i++) {
+        ctx.moveTo(i * CELL + 0.5, 0);
+        ctx.lineTo(i * CELL + 0.5, canvas.height);
+        ctx.moveTo(0, i * CELL + 0.5);
+        ctx.lineTo(canvas.width, i * CELL + 0.5);
+      }
+      ctx.stroke();
+
+      // 먹이 (원형)
+      if (food) {
+        ctx.fillStyle = '#f87171';
+        ctx.beginPath();
+        ctx.arc(food.x * CELL + CELL / 2, food.y * CELL + CELL / 2, CELL / 2 - 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // 지렁이 — 몸과 머리 색을 구분
+      for (let i = snake.length - 1; i >= 0; i--) {
+        ctx.fillStyle = i === 0 ? '#22c55e' : '#4ade80';
+        ctx.fillRect(snake[i].x * CELL + 1, snake[i].y * CELL + 1, CELL - 2, CELL - 2);
+      }
+
+      if (state === 'paused') drawOverlay('일시정지', 'Space 키로 계속하기');
+      if (state === 'over') drawOverlay('게임 오버', `점수 ${score} · Space 또는 Enter 로 재시작`);
+    }
+
+    function drawOverlay(title, subtitle) {
+      ctx.fillStyle = 'rgba(18, 22, 28, 0.82)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#e7ecf3';
+      ctx.font = 'bold 32px "Segoe UI", "Malgun Gothic", sans-serif';
+      ctx.fillText(title, canvas.width / 2, canvas.height / 2 - 8);
+
+      ctx.fillStyle = '#8b97a8';
+      ctx.font = '14px "Segoe UI", "Malgun Gothic", sans-serif';
+      ctx.fillText(subtitle, canvas.width / 2, canvas.height / 2 + 24);
+    }
+
+    // ── 입력 ────────────────────────────────────────────────
+    function handleKey(e) {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        if (state === 'over') {
+          resetGame();
+        } else if (e.code === 'Space') {
+          state = state === 'playing' ? 'paused' : 'playing';
+        }
+        return;
+      }
+
+      const requested = KEY_TO_DIRECTION[e.code];
+      if (!requested) return;
+      e.preventDefault();
+      if (state !== 'playing') return;
+      // 현재 진행 방향의 정반대는 무시
+      if (requested === OPPOSITE[direction]) return;
+      nextDirection = requested;
+    }
+
+    document.addEventListener('keydown', handleKey);
+
+    // ── 메인 루프 ───────────────────────────────────────────
+    // requestAnimationFrame + 시간 누적 → 화면 주사율과 무관하게 일정한 속도 유지
+    let lastTime = 0;
+    let accumulator = 0;
+
+    function loop(now) {
+      const delta = lastTime ? now - lastTime : 0;
+      lastTime = now;
+
+      if (state === 'playing') {
+        accumulator += delta;
+        while (accumulator >= SPEED_MS) {
+          accumulator -= SPEED_MS;
+          step();
+          if (state !== 'playing') { accumulator = 0; break; }
+        }
+      } else {
+        accumulator = 0;
+      }
+
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    resetGame();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
