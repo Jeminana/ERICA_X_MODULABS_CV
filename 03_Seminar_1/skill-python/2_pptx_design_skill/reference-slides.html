@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pressed Flower Scrapbook — Reference Slides</title>
+<style>
+/* =====================================================================
+   DESIGN TOKENS — Pressed Flower Scrapbook
+   슬라이드 캔버스: 1280 × 720 px (16:9) = PPTX 13.333 × 7.5 in (96 px/in)
+   ===================================================================== */
+:root{
+  --brown-900:#4A2410;   /* 가장 짙은 갈색: 그림자, 강조선 */
+  --brown-800:#5C2E14;   /* 메인 다크: 다크 배경, 제목 글자 */
+  --brown-600:#7A4A2A;   /* 보조 갈색: 키커, 아이콘 */
+  --kraft:#B39373;       /* 구겨진 크라프트지 */
+  --kraft-light:#CDB295;
+  --paper:#EAE0CC;       /* 찢어진 종이 카드 */
+  --paper-2:#F3EBDD;     /* 밝은 종이 / 다크 배경 위 글자 */
+  --peach:#F8E7D3;       /* 밝은 슬라이드 배경 */
+  --ledger:#EFD6A0;      /* 오래된 신문/장부 조각 */
+  --ink:#3B2414;         /* 본문 글자 */
+  --muted:#7B6552;       /* 보조 글자 */
+  --yellow:#E6BE4A;      /* 압화 노랑 (포인트) */
+  --lilac:#A98ABD;       /* 압화 라일락 (포인트) */
+  --sage:#6D7C53;        /* 줄기/잎 */
+  --white:#FFFDF8;       /* 폴라로이드 테두리 */
+
+  --font:Arial,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  --font-display:"Arial Black",Arial,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+
+  /* 텍스처 (PPTX 변환 시 PNG로 내보내 배경 이미지로 사용) */
+  --kraft-tex:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.007' numOctaves='5' seed='7'/%3E%3CfeDiffuseLighting lighting-color='%23ffffff' surfaceScale='5'%3E%3CfeDistantLight azimuth='225' elevation='55'/%3E%3C/feDiffuseLighting%3E%3C/filter%3E%3Crect width='640' height='640' filter='url(%23c)'/%3E%3C/svg%3E");
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='2'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .24 0 0 0 0 .13 .32 0 0 0 -.08'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23g)'/%3E%3C/svg%3E");
+  --ledger-tex:repeating-linear-gradient(0deg,transparent 0 17px,rgba(92,46,20,.16) 17px 18px),
+               repeating-linear-gradient(90deg,transparent 0 118px,rgba(160,60,40,.22) 118px 120px);
+}
+
+/* ---------- 페이지 (슬라이드 바깥) ---------- */
+*{box-sizing:border-box}
+body{margin:0;background:#D8CCBC;font-family:var(--font);color:var(--ink);padding:32px 16px 80px}
+.doc{max-width:1280px;margin:0 auto}
+.doc-head{background:var(--brown-800);color:var(--paper-2);padding:28px 32px;border-radius:6px;margin-bottom:28px}
+.doc-head h1{margin:0 0 8px;font:900 30px var(--font-display)}
+.doc-head p{margin:4px 0;font-size:15px;line-height:1.6;opacity:.9}
+.doc-head code{background:rgba(255,255,255,.12);padding:1px 6px;border-radius:3px;font-size:13px}
+.meta{font-size:13px;line-height:1.55;color:#4d3a2b;margin:36px 0 10px;padding-left:10px;border-left:4px solid var(--brown-600)}
+.meta b{font-size:15px;color:var(--brown-800)}
+.stage{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;box-shadow:0 10px 30px rgba(40,20,5,.28)}
+.stage>.slide{position:absolute;top:0;left:0;transform:scale(var(--k,1));transform-origin:0 0}
+
+/* ---------- 슬라이드 & 배경 ---------- */
+.slide{position:relative;width:1280px;height:720px;overflow:hidden;font-family:var(--font);color:var(--ink)}
+.bg-peach{background:var(--grain),var(--peach)}
+.bg-brown{background:var(--grain),var(--brown-800)}
+.bg-kraft{background:var(--kraft-tex),var(--kraft);background-blend-mode:multiply}
+.abs{position:absolute}
+
+/* ---------- 찢어진 종이 조각 (scrap) ----------
+   가장자리를 SVG 필터(#rough)로 불규칙하게 만들고, 글자는 필터 영향을 받지 않음 */
+.scrap{position:absolute;isolation:isolate;transform:rotate(var(--r,0deg))}
+.scrap::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--bg);background-blend-mode:multiply;filter:url(#rough)}
+.scrap.shadow::before{filter:url(#rough) drop-shadow(0 8px 12px rgba(40,20,5,.28))}
+.paper{--bg:var(--grain),linear-gradient(var(--paper),var(--paper))}
+.paper-light{--bg:var(--grain),linear-gradient(var(--paper-2),var(--paper-2))}
+.kraft{--bg:var(--kraft-tex),linear-gradient(var(--kraft),var(--kraft))}
+.ledger{--bg:var(--ledger-tex),linear-gradient(var(--ledger),var(--ledger))}
+.dark{--bg:var(--grain),linear-gradient(var(--brown-800),var(--brown-800));color:var(--paper-2)}
+
+/* ---------- 타이포그래피 ---------- */
+.display{font-family:var(--font-display);font-weight:900;color:var(--brown-800);line-height:1.04;letter-spacing:-.01em;margin:0}
+.display .mix{font-family:var(--font);font-weight:700;font-size:.9em;color:var(--brown-600);position:relative;top:.03em}
+.on-dark .display,.dark .display{color:var(--paper-2)}
+.on-dark .display .mix,.dark .display .mix{color:var(--ledger)}
+.h1{font-size:54px}
+.h2{font:700 28px/1.3 var(--font);color:var(--brown-800);margin:0}
+.h3{font:700 21px/1.35 var(--font);color:var(--brown-800);margin:0}
+.kicker{font:700 14px var(--font);letter-spacing:.18em;text-transform:uppercase;color:var(--brown-600)}
+.body{font-size:19px;line-height:1.65;margin:0}
+.small{font-size:16px;line-height:1.6;margin:0}
+.caption{font-size:14px;line-height:1.5;color:var(--muted)}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.on-dark{color:var(--paper-2)}
+.on-dark .kicker,.dark .kicker{color:var(--ledger)}
+
+/* ---------- 컴포넌트 ---------- */
+/* 우표형 카드: 톱니 가장자리 + 점선 스티치 */
+.stamp{position:absolute;padding:9px;transform:rotate(var(--r,0deg));
+  background:radial-gradient(circle at 8px 8px,transparent 4.5px,var(--brown-800) 5px) -8px -8px/16px 16px;
+  filter:drop-shadow(0 5px 7px rgba(40,20,5,.3))}
+.stamp-in{height:100%;background:var(--grain),var(--brown-800);color:var(--paper-2);padding:30px 26px 20px;outline:1.5px dashed rgba(243,235,221,.35);outline-offset:-8px}
+.stamp-in .h3{color:var(--paper-2)}
+.badge{position:absolute;top:-24px;left:50%;transform:translateX(-50%);width:48px;height:48px;border-radius:50%;
+  background:var(--paper-2);border:3px solid var(--brown-800);display:grid;place-items:center;
+  font:900 19px var(--font-display);color:var(--brown-800);z-index:2}
+.num{width:46px;height:46px;border-radius:50%;background:var(--brown-800);color:var(--paper-2);display:grid;place-items:center;font:900 18px var(--font-display);flex:none}
+/* 원형 사진 */
+.circle{position:absolute;border-radius:50%;overflow:hidden;border:6px solid var(--paper-2);box-shadow:0 6px 14px rgba(40,20,5,.3);background:var(--paper)}
+.circle svg,.polaroid svg{display:block;width:100%;height:100%}
+/* 폴라로이드 + 마스킹테이프 */
+.polaroid{position:absolute;background:var(--white);padding:12px 12px 0;box-shadow:0 10px 20px rgba(40,20,5,.3);transform:rotate(var(--r,0deg))}
+.polaroid .ph{height:196px;overflow:hidden}
+.polaroid .cap{font-size:15px;font-weight:700;color:var(--brown-800);padding:12px 2px 14px;text-align:center}
+.tape{position:absolute;top:-16px;left:50%;width:120px;height:32px;transform:translateX(-50%) rotate(-4deg);background:rgba(239,214,160,.8);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* 장식 (압화, 고사리) */
+.deco{position:absolute;overflow:visible;pointer-events:none;transform:rotate(var(--r,0deg))}
+/* 리스트 */
+.list{list-style:none;margin:0;padding:0}
+.list li{display:flex;gap:12px;align-items:flex-start;font-size:18px;line-height:1.55;margin:0 0 12px}
+.list li svg{flex:none;width:20px;height:20px;margin-top:4px}
+.mark{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:900 14px var(--font);margin-top:1px}
+.mark.x{background:rgba(92,46,20,.12);color:var(--brown-800)}
+.mark.o{background:var(--yellow);color:var(--brown-900)}
+.rule{border:0;border-top:2px dashed rgba(92,46,20,.28);margin:0}
+.takeaway{background:rgba(92,46,20,.08);border-left:6px solid var(--brown-800);padding:14px 18px;font-size:17px;line-height:1.55}
+/* 표 */
+.table{width:100%;border-collapse:collapse;font-size:17px}
+.table th{background:var(--brown-800);color:var(--paper-2);font-weight:700;text-align:left;padding:13px 16px}
+.table td{padding:12px 16px;border-bottom:1.5px dashed rgba(92,46,20,.25)}
+.table tr:nth-child(even) td{background:rgba(92,46,20,.05)}
+.table .r{text-align:right}
+.up{color:#5E7A3A;font-weight:700}.down{color:#A2452B;font-weight:700}
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;background:var(--ledger);font-size:14px;font-weight:700;color:var(--brown-800)}
+.swatch{width:96px}
+.swatch i{display:block;height:64px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.swatch b{display:block;font-size:13px;margin-top:6px;color:var(--brown-800)}
+.swatch span{font-size:12px;color:var(--muted)}
+
+@media print{
+  @page{size:1280px 720px;margin:0}
+  body{padding:0;background:none}.doc-head,.meta{display:none}
+  .stage{width:1280px;height:720px;box-shadow:none;page-break-after:always}
+  .stage>.slide{transform:none}
+}
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     SVG 공용 정의: 필터 · 압화 · 고사리 · 사진 대체 일러스트
+     PPTX 변환 시 각 <symbol>을 개별 SVG/PNG로 내보내 이미지로 배치
+     ===================================================================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="rough" x="-4%" y="-4%" width="108%" height="108%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="4" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+
+    <pattern id="knitp" width="30" height="26" patternUnits="userSpaceOnUse">
+      <path d="M3 5 L15 21 L27 5" stroke="#CFBDA3" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </pattern>
+
+    <!-- 노란 꽃 -->
+    <symbol id="fy" viewBox="-12 -12 24 24">
+      <g fill="#E6BE4A" stroke="#C99A2E" stroke-width=".6">
+        <ellipse cy="-5.5" rx="4" ry="5.5"/><ellipse cy="5.5" rx="4" ry="5.5"/>
+        <ellipse cx="-5.5" rx="5.5" ry="4"/><ellipse cx="5.5" rx="5.5" ry="4"/>
+      </g>
+      <circle r="2.4" fill="#A8652A"/>
+    </symbol>
+    <!-- 라일락 꽃 -->
+    <symbol id="fl" viewBox="-12 -12 24 24">
+      <g fill="#B596C6" stroke="#8E6FA3" stroke-width=".6">
+        <ellipse cy="-5.5" rx="4" ry="5.5"/><ellipse cy="5.5" rx="4" ry="5.5"/>
+        <ellipse cx="-5.5" rx="5.5" ry="4"/><ellipse cx="5.5" rx="5.5" ry="4"/>
+      </g>
+      <circle r="2.4" fill="#F1DFA6"/>
+    </symbol>
+
+    <!-- 압화 가지 -->
+    <symbol id="sprig" viewBox="0 0 200 420">
+      <g fill="none" stroke="#6D7C53" stroke-width="3" stroke-linecap="round">
+        <path d="M104 420 C100 340 112 260 96 180 S74 70 66 24"/>
+        <path d="M98 214 C122 184 140 150 150 96"/>
+        <path d="M95 158 C72 136 52 112 40 72"/>
+        <path d="M101 292 C132 272 152 250 166 212"/>
+        <path d="M100 250 C78 236 58 222 44 190"/>
+      </g>
+      <path d="M103 372 q36 -34 74 -16 q-38 30 -74 16z" fill="#7E8B5E"/>
+      <path d="M101 336 q-38 -30 -72 -8 q36 26 72 8z" fill="#6D7C53"/>
+      <path d="M99 268 q-30 -14 -50 4 q28 12 50 -4z" fill="#7E8B5E"/>
+      <use href="#fy" x="48" y="4" width="36" height="36"/><use href="#fy" x="76" y="18" width="28" height="28"/><use href="#fl" x="42" y="30" width="26" height="26"/>
+      <use href="#fl" x="20" y="52" width="34" height="34"/><use href="#fy" x="46" y="64" width="24" height="24"/><use href="#fl" x="16" y="82" width="24" height="24"/>
+      <use href="#fy" x="132" y="72" width="36" height="36"/><use href="#fl" x="158" y="96" width="26" height="26"/><use href="#fy" x="126" y="102" width="24" height="24"/>
+      <use href="#fl" x="150" y="190" width="34" height="34"/><use href="#fy" x="172" y="210" width="24" height="24"/>
+      <use href="#fy" x="24" y="170" width="32" height="32"/><use href="#fl" x="50" y="188" width="22" height="22"/>
+      <use href="#fl" x="84" y="120" width="22" height="22"/>
+    </symbol>
+
+    <!-- 고사리 잎 -->
+    <symbol id="fern" viewBox="0 0 90 400">
+      <path d="M45 400 C44 300 50 160 44 6" stroke="#5F6E48" stroke-width="2.5" fill="none"/>
+      <g fill="#6D7C53">
+        <ellipse cx="29" cy="360" rx="18" ry="6" transform="rotate(25 29 360)"/><ellipse cx="61" cy="354" rx="18" ry="6" transform="rotate(-25 61 354)"/>
+        <ellipse cx="30" cy="328" rx="18" ry="6" transform="rotate(25 30 328)"/><ellipse cx="61" cy="322" rx="18" ry="6" transform="rotate(-25 61 322)"/>
+        <ellipse cx="31" cy="296" rx="17" ry="6" transform="rotate(25 31 296)"/><ellipse cx="61" cy="290" rx="17" ry="6" transform="rotate(-25 61 290)"/>
+        <ellipse cx="32" cy="264" rx="16" ry="5.5" transform="rotate(25 32 264)"/><ellipse cx="61" cy="258" rx="16" ry="5.5" transform="rotate(-25 61 258)"/>
+        <ellipse cx="33" cy="232" rx="15" ry="5.5" transform="rotate(25 33 232)"/><ellipse cx="61" cy="226" rx="15" ry="5.5" transform="rotate(-25 61 226)"/>
+        <ellipse cx="35" cy="200" rx="13" ry="5" transform="rotate(25 35 200)"/><ellipse cx="59" cy="194" rx="13" ry="5" transform="rotate(-25 59 194)"/>
+        <ellipse cx="36" cy="168" rx="12" ry="4.5" transform="rotate(25 36 168)"/><ellipse cx="58" cy="162" rx="12" ry="4.5" transform="rotate(-25 58 162)"/>
+        <ellipse cx="38" cy="136" rx="10" ry="4" transform="rotate(25 38 136)"/><ellipse cx="56" cy="130" rx="10" ry="4" transform="rotate(-25 56 130)"/>
+        <ellipse cx="39" cy="104" rx="8" ry="3.5" transform="rotate(25 39 104)"/><ellipse cx="54" cy="98" rx="8" ry="3.5" transform="rotate(-25 54 98)"/>
+        <ellipse cx="41" cy="72" rx="6" ry="3" transform="rotate(25 41 72)"/><ellipse cx="51" cy="66" rx="6" ry="3" transform="rotate(-25 51 66)"/>
+        <ellipse cx="43" cy="40" rx="4" ry="2.5" transform="rotate(25 43 40)"/><ellipse cx="49" cy="34" rx="4" ry="2.5" transform="rotate(-25 49 34)"/>
+      </g>
+    </symbol>
+
+    <!-- 사진 대체 일러스트 (실제 이미지로 교체) -->
+    <symbol id="ph-cup" viewBox="0 0 240 180">
+      <rect width="240" height="180" fill="#E9DFCF"/>
+      <rect x="14" y="16" width="70" height="52" fill="#F4ECDF" transform="rotate(-8 49 42)"/>
+      <circle cx="124" cy="94" r="58" fill="#F6F0E6" stroke="#D8CBB7" stroke-width="2"/>
+      <circle cx="124" cy="94" r="38" fill="#FFFDF8" stroke="#D8CBB7" stroke-width="2"/>
+      <circle cx="124" cy="94" r="29" fill="#8C5A36"/>
+      <circle cx="118" cy="88" r="11" fill="#B98B63" opacity=".85"/>
+      <path d="M180 72 l44 -30" stroke="#BFA88A" stroke-width="6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ph-knit" viewBox="0 0 240 180">
+      <rect width="240" height="180" fill="#E4D6C2"/>
+      <rect width="240" height="180" fill="url(#knitp)"/>
+      <rect x="130" y="96" width="60" height="56" rx="8" fill="#D9A6A0"/>
+      <path d="M190 110 q22 0 22 16 q0 16 -22 16" stroke="#D9A6A0" stroke-width="8" fill="none"/>
+      <ellipse cx="160" cy="98" rx="30" ry="6" fill="#8C5A36"/>
+    </symbol>
+    <symbol id="ph-flower" viewBox="0 0 240 180">
+      <rect width="240" height="180" fill="#F1E9DC"/>
+      <ellipse cx="90" cy="112" rx="46" ry="42" fill="#F9F4EC" stroke="#DCCDB8" stroke-width="2"/>
+      <circle cx="90" cy="108" r="26" fill="#9C6A43"/>
+      <use href="#sprig" x="130" y="6" width="84" height="176"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="doc">
+
+<header class="doc-head">
+  <h1>Pressed Flower Scrapbook — 레퍼런스 슬라이드 모음집</h1>
+  <p>압화 · 찢어진 종이 · 크라프트지 · 오래된 장부 조각으로 구성한 콜라주 스타일. 설명형 발표(본문이 조금 긴 슬라이드)에 맞게 카드 크기와 여백을 키웠습니다.</p>
+  <p>캔버스 <code>1280×720px</code> = PPTX <code>13.333×7.5in</code> · 폰트 <code>Arial</code> (제목 <code>Arial Black</code>, 한글은 맑은 고딕으로 대체) · 모든 좌표는 px 절대 위치</p>
+  <p>PPTX 변환 규칙: 글자는 네이티브 텍스트 상자로 · 종이 조각/텍스처/압화/차트는 SVG→PNG 이미지로 · 회전값(<code>--r</code>)은 도형 회전으로 그대로 옮김</p>
+</header>
+
+<!-- ============================== 00 STYLE GUIDE ============================== -->
+<div class="meta"><b>00 · Style Guide</b> — 팔레트, 타이포 스케일, 핵심 컴포넌트 한눈에 보기 (발표용 슬라이드 아님)</div>
+<div class="stage"><section class="slide bg-kraft">
+  <div class="scrap paper shadow" style="left:40px;top:34px;width:1200px;height:652px;--r:-.3deg;padding:36px 44px">
+    <div class="kicker">Design System</div>
+    <h2 class="display" style="font-size:40px;margin:4px 0 22px">Pressed <span class="mix">F</span>lower <span class="mix">S</span>crapbook</h2>
+    <div style="display:flex;gap:14px;flex-wrap:wrap">
+      <div class="swatch"><i style="background:#5C2E14"></i><b>Brown 800</b><span>#5C2E14</span></div>
+      <div class="swatch"><i style="background:#7A4A2A"></i><b>Brown 600</b><span>#7A4A2A</span></div>
+      <div class="swatch"><i style="background:#B39373"></i><b>Kraft</b><span>#B39373</span></div>
+      <div class="swatch"><i style="background:#EAE0CC"></i><b>Paper</b><span>#EAE0CC</span></div>
+      <div class="swatch"><i style="background:#F8E7D3"></i><b>Peach</b><span>#F8E7D3</span></div>
+      <div class="swatch"><i style="background:#EFD6A0"></i><b>Ledger</b><span>#EFD6A0</span></div>
+      <div class="swatch"><i style="background:#3B2414"></i><b>Ink</b><span>#3B2414</span></div>
+      <div class="swatch"><i style="background:#E6BE4A"></i><b>Yellow</b><span>#E6BE4A</span></div>
+      <div class="swatch"><i style="background:#A98ABD"></i><b>Lilac</b><span>#A98ABD</span></div>
+      <div class="swatch"><i style="background:#6D7C53"></i><b>Sage</b><span>#6D7C53</span></div>
+    </div>
+    <div style="display:flex;gap:40px;margin-top:30px">
+      <div style="width:470px">
+        <div class="kicker" style="margin-bottom:10px">Typography</div>
+        <div class="display" style="font-size:54px">제목 <span class="mix">H</span>1 · 54</div>
+        <div class="h2" style="margin-top:8px">소제목 H2 · Arial Bold 28</div>
+        <div class="h3" style="margin-top:6px">카드 제목 H3 · Arial Bold 21</div>
+        <p class="body" style="margin-top:6px">본문 Body · Arial 19 / 행간 1.65</p>
+        <p class="small muted">보조 Small · 16 &nbsp;·&nbsp; <span class="caption">캡션 Caption · 14</span></p>
+      </div>
+      <div style="position:relative;flex:1;height:250px">
+        <div class="kicker" style="margin-bottom:10px">Components</div>
+        <div class="stamp" style="left:0;top:50px;width:210px;height:150px;--r:-2deg"><span class="badge">1</span>
+          <div class="stamp-in center"><div class="h3">우표 카드</div><p class="small">단계·항목</p></div></div>
+        <div class="scrap paper-light shadow" style="left:240px;top:44px;width:190px;height:78px;--r:2deg;padding:16px 20px"><b>종이 조각</b><div class="caption">본문 카드</div></div>
+        <div class="scrap ledger" style="left:250px;top:140px;width:180px;height:66px;--r:-3deg;padding:18px 20px"><b>장부 조각</b></div>
+        <div class="circle" style="left:460px;top:40px;width:120px;height:120px"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-cup"/></svg></div>
+        <svg class="deco" style="left:600px;top:-20px;width:110px;height:240px;--r:8deg"><use href="#sprig"/></svg>
+      </div>
+    </div>
+  </div>
+</section></div>
+
+<!-- ============================== 01 COVER ============================== -->
+<div class="meta"><b>01 · Cover</b> — 크라프트 배경 + 중앙 대형 종이 카드 + 장부 조각 + 좌상/우하 압화 · 제목에 <code>.mix</code> 글자 섞기(콜라주 느낌)</div>
+<div class="stage"><section class="slide bg-kraft">
+  <div class="scrap ledger" style="left:780px;top:-40px;width:560px;height:300px;--r:4deg"></div>
+  <div class="scrap dark" style="left:-50px;top:520px;width:440px;height:260px;--r:-3deg"></div>
+  <div class="scrap paper shadow" style="left:170px;top:110px;width:840px;height:490px;--r:-1.2deg;padding:74px 90px">
+    <div class="kicker">2026 · 팀 프로젝트 발표</div>
+    <h1 class="display" style="font-size:96px;margin:18px 0 26px"><span class="mix">프</span>로젝트<br>발표 <span class="mix">자</span>료</h1>
+    <p class="h2" style="font-weight:400;color:var(--ink);font-size:25px">동네 카페 활성화를 위한 공간 · 메뉴 개선 제안</p>
+    <hr class="rule" style="margin:28px 0 18px;width:420px">
+    <p class="small muted"><b style="color:var(--brown-800)">발표</b> 팀 브라운 &nbsp;·&nbsp; 2026. 09. 15</p>
+  </div>
+  <svg class="deco" style="left:-50px;top:-80px;width:240px;height:500px;--r:165deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:950px;top:-10px;width:90px;height:400px;--r:14deg"><use href="#fern"/></svg>
+  <svg class="deco" style="left:990px;top:290px;width:270px;height:560px;--r:-10deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 02 AGENDA ============================== -->
+<div class="meta"><b>02 · Agenda</b> — 좌측 다크 띠(섹션 제목) + 우측 종이 카드 안 번호 목록 5개 · 항목당 제목 + 한 줄 설명</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap dark" style="left:-70px;top:-40px;width:480px;height:800px;--r:2deg"></div>
+  <div class="abs on-dark" style="left:70px;top:230px">
+    <div class="kicker">Contents</div>
+    <h2 class="display" style="font-size:84px;margin-top:10px">목<span class="mix">차</span></h2>
+    <p class="small" style="margin-top:18px;opacity:.85;width:260px">발표는 약 15분,<br>질의응답 5분으로 진행합니다.</p>
+  </div>
+  <div class="scrap ledger" style="left:350px;top:570px;width:300px;height:200px;--r:-6deg"></div>
+  <div class="scrap paper shadow" style="left:520px;top:62px;width:690px;height:596px;--r:.8deg;padding:44px 52px">
+    <div style="display:flex;gap:20px;align-items:center"><span class="num">01</span><div><div class="h3">추진 배경</div><div class="small muted">왜 이 프로젝트를 시작했는지, 동네 상권의 변화</div></div></div>
+    <hr class="rule" style="margin:18px 0">
+    <div style="display:flex;gap:20px;align-items:center"><span class="num">02</span><div><div class="h3">문제 정의</div><div class="small muted">방문 데이터와 인터뷰로 찾은 세 가지 핵심 문제</div></div></div>
+    <hr class="rule" style="margin:18px 0">
+    <div style="display:flex;gap:20px;align-items:center"><span class="num">03</span><div><div class="h3">실행 계획</div><div class="small muted">12주 동안 4단계로 진행한 개선 작업</div></div></div>
+    <hr class="rule" style="margin:18px 0">
+    <div style="display:flex;gap:20px;align-items:center"><span class="num">04</span><div><div class="h3">결과 분석</div><div class="small muted">방문 패턴, 메뉴별 성과, 고객 만족도 변화</div></div></div>
+    <hr class="rule" style="margin:18px 0">
+    <div style="display:flex;gap:20px;align-items:center"><span class="num">05</span><div><div class="h3">제언 및 향후 과제</div><div class="small muted">지속 가능한 운영을 위한 다음 단계</div></div></div>
+  </div>
+  <svg class="deco" style="left:230px;top:420px;width:210px;height:440px;--r:-14deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 03 TEAM ============================== -->
+<div class="meta"><b>03 · Team / Introduction</b> — 다크 배경 + 넓은 종이 카드 + 원형 사진 3개(이름 · 역할 · 2줄 소개)</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap ledger" style="left:900px;top:-50px;width:460px;height:230px;--r:5deg"></div>
+  <div class="scrap kraft" style="left:-40px;top:610px;width:1360px;height:200px;--r:-1.5deg"></div>
+  <div class="scrap paper shadow" style="left:110px;top:66px;width:1060px;height:566px;--r:-.6deg;padding:44px 60px">
+    <h2 class="display h1 center">팀 <span class="mix">소</span>개</h2>
+    <p class="small muted center" style="margin-top:6px">기획 · 데이터 · 디자인을 나누어 맡았습니다</p>
+    <div style="display:flex;justify-content:space-between;margin-top:34px">
+      <div class="center" style="width:280px"><div class="circle" style="position:relative;width:170px;height:170px;margin:0 auto"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-cup"/></svg></div>
+        <div class="h3" style="margin-top:16px">김하늘</div><div class="kicker" style="margin:4px 0 8px">팀장 · 기획</div><p class="small">프로젝트 일정과 인터뷰를 총괄하고 최종 제안서를 정리했습니다.</p></div>
+      <div class="center" style="width:280px"><div class="circle" style="position:relative;width:170px;height:170px;margin:0 auto"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-knit"/></svg></div>
+        <div class="h3" style="margin-top:16px">이바다</div><div class="kicker" style="margin:4px 0 8px">데이터 분석</div><p class="small">방문 기록과 판매 데이터를 모아 요일·시간대별 패턴을 분석했습니다.</p></div>
+      <div class="center" style="width:280px"><div class="circle" style="position:relative;width:170px;height:170px;margin:0 auto"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-flower"/></svg></div>
+        <div class="h3" style="margin-top:16px">박들꽃</div><div class="kicker" style="margin:4px 0 8px">공간 · 디자인</div><p class="small">좌석 배치와 메뉴판, 포장 디자인 개선안을 만들었습니다.</p></div>
+    </div>
+  </div>
+  <svg class="deco" style="left:-40px;top:370px;width:200px;height:420px;--r:16deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:1150px;top:380px;width:200px;height:420px;--r:-18deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 04 SECTION DIVIDER ============================== -->
+<div class="meta"><b>04 · Section Divider</b> — 다크/크라프트 반반 + 대형 섹션 번호 + 기울어진 제목 종이띠 + 섹션 요약 2줄</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap kraft" style="left:720px;top:-70px;width:700px;height:860px;--r:-4deg"></div>
+  <div class="scrap ledger" style="left:840px;top:500px;width:520px;height:280px;--r:5deg"></div>
+  <div class="abs" style="left:104px;top:40px;font:900 250px/1 var(--font-display);color:#8A5B3B;opacity:.55">01</div>
+  <div class="scrap paper shadow" style="left:100px;top:300px;width:700px;height:176px;--r:-2deg;padding:34px 48px">
+    <div class="kicker">Section 01</div>
+    <h2 class="display" style="font-size:64px;margin-top:8px">추진 <span class="mix">배</span>경</h2>
+  </div>
+  <p class="abs body on-dark" style="left:120px;top:520px;width:580px;opacity:.9">동네 카페를 찾는 손님은 줄지 않았지만 머무는 시간과 재방문이 줄었습니다. 이 섹션에서는 그 변화를 숫자로 살펴봅니다.</p>
+  <svg class="deco" style="left:930px;top:30px;width:280px;height:590px;--r:8deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 05 TEXT + VISUAL ============================== -->
+<div class="meta"><b>05 · Text + Key Number</b> — 좌측 대형 본문 카드(제목·도입문단·불릿 3개) + 우측 크라프트 영역 위 핵심 수치 메모 카드</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap kraft" style="left:860px;top:-50px;width:470px;height:830px;--r:3deg"></div>
+  <div class="scrap ledger" style="left:830px;top:480px;width:480px;height:300px;--r:-8deg"></div>
+  <div class="scrap paper shadow" style="left:60px;top:56px;width:770px;height:608px;--r:-.8deg;padding:48px 56px">
+    <div class="kicker">01 · 추진 배경</div>
+    <h2 class="display h1" style="margin:8px 0 20px">왜 <span class="mix">지</span>금인가</h2>
+    <p class="body">최근 1년 사이 대형 프랜차이즈 매장이 두 곳 새로 문을 열면서, 동네 카페의 방문 수는 비슷하게 유지됐지만 <b>평균 체류 시간과 재방문율이 눈에 띄게 줄었습니다.</b></p>
+    <hr class="rule" style="margin:24px 0 20px">
+    <ul class="list">
+      <li><svg viewBox="-12 -12 24 24"><use href="#fy"/></svg><span><b>체류 시간 감소</b> — 평균 52분에서 31분으로 줄어 추가 주문 기회가 사라짐</span></li>
+      <li><svg viewBox="-12 -12 24 24"><use href="#fl"/></svg><span><b>테이크아웃 비중 증가</b> — 전체 주문의 64%가 포장이지만 포장 메뉴는 3종뿐</span></li>
+      <li><svg viewBox="-12 -12 24 24"><use href="#fy"/></svg><span><b>주말 쏠림</b> — 평일 오후 좌석 점유율이 20% 아래로 떨어짐</span></li>
+    </ul>
+  </div>
+  <div class="scrap paper-light shadow" style="left:900px;top:110px;width:310px;height:230px;--r:3deg;padding:30px 32px">
+    <div class="kicker">핵심 수치</div>
+    <div class="display" style="font-size:78px;margin:8px 0 6px">38<span class="mix">%</span></div>
+    <p class="caption">1년간 재방문율 감소 폭<br>(2025.09 → 2026.08, 예시 데이터)</p>
+  </div>
+  <svg class="deco" style="left:1010px;top:330px;width:240px;height:480px;--r:-8deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 06 STAMP GRID ============================== -->
+<div class="meta"><b>06 · 4-Step Stamp Grid</b> — 중앙 제목 + 우표형 카드 2×2(번호 배지 · 기간 칩 · 제목 · 설명 2줄) · 좌우 크라프트 띠에 압화</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap kraft" style="left:-90px;top:-50px;width:270px;height:830px;--r:2deg"></div>
+  <div class="scrap kraft" style="left:1150px;top:-50px;width:240px;height:830px;--r:-2deg"></div>
+  <div class="abs center" style="left:180px;top:44px;width:920px">
+    <h2 class="display h1"><span class="mix">실</span>행 계획</h2>
+    <p class="small muted" style="margin-top:8px">12주 동안 네 단계로 나누어 진행했습니다</p>
+  </div>
+  <div class="stamp" style="left:220px;top:196px;width:410px;height:212px;--r:-1deg"><span class="badge">1</span>
+    <div class="stamp-in"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3">현황 조사</div><span class="chip">1–3주</span></div>
+      <p class="small" style="margin-top:10px;opacity:.9">3주간 시간대별 방문 기록을 모으고 단골 손님 12명과 인터뷰했습니다.</p></div></div>
+  <div class="stamp" style="left:660px;top:196px;width:410px;height:212px;--r:1deg"><span class="badge">2</span>
+    <div class="stamp-in"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3">공간 재배치</div><span class="chip">4–6주</span></div>
+      <p class="small" style="margin-top:10px;opacity:.9">1인석과 콘센트 좌석을 늘리고, 창가를 오래 머무는 좌석으로 바꿨습니다.</p></div></div>
+  <div class="stamp" style="left:220px;top:458px;width:410px;height:212px;--r:.8deg"><span class="badge">3</span>
+    <div class="stamp-in"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3">메뉴 개편</div><span class="chip">7–9주</span></div>
+      <p class="small" style="margin-top:10px;opacity:.9">평일 오후 세트와 포장 전용 디저트 4종을 새로 선보였습니다.</p></div></div>
+  <div class="stamp" style="left:660px;top:458px;width:410px;height:212px;--r:-1.2deg"><span class="badge">4</span>
+    <div class="stamp-in"><div style="display:flex;justify-content:space-between;align-items:center"><div class="h3">효과 측정</div><span class="chip">10–12주</span></div>
+      <p class="small" style="margin-top:10px;opacity:.9">개편 전후 같은 기간을 비교해 체류 시간과 재방문율 변화를 확인했습니다.</p></div></div>
+  <svg class="deco" style="left:0;top:250px;width:200px;height:440px;--r:6deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:1090px;top:280px;width:200px;height:440px;--r:-8deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 07 PROBLEM / QUOTE ============================== -->
+<div class="meta"><b>07 · Key Message + 3 Points</b> — 다크 배경 위 제목 + 넓은 종이 카드(인용형 핵심 문장 + 점선으로 나눈 3열 설명)</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap ledger" style="left:-50px;top:-40px;width:440px;height:130px;--r:-4deg"></div>
+  <div class="abs on-dark" style="left:120px;top:112px">
+    <div class="kicker">02 · 문제 정의</div>
+    <h2 class="display h1" style="margin-top:6px">무엇이 <span class="mix">문</span>제였나</h2>
+  </div>
+  <div class="scrap paper shadow" style="left:90px;top:236px;width:1100px;height:434px;--r:.5deg;padding:40px 56px">
+    <p class="center" style="font:700 30px/1.4 var(--font);color:var(--brown-800);margin:0">“손님은 줄지 않았다. <span style="background:linear-gradient(transparent 60%,rgba(230,190,74,.55) 60%)">머무는 시간이 줄었다.</span>”</p>
+    <hr class="rule" style="margin:28px 0 26px">
+    <div style="display:flex">
+      <div style="flex:1;padding-right:30px"><div class="kicker">Problem 1</div><div class="h3" style="margin:6px 0 10px">앉을 이유가 없는 좌석</div><p class="small">4인 테이블 위주라 혼자 온 손님이 오래 머물기 어려웠습니다.</p></div>
+      <div style="flex:1;padding:0 30px;border-left:2px dashed rgba(92,46,20,.28)"><div class="kicker">Problem 2</div><div class="h3" style="margin:6px 0 10px">포장 메뉴의 공백</div><p class="small">주문의 64%가 포장인데, 포장에 맞는 메뉴는 3종뿐이었습니다.</p></div>
+      <div style="flex:1;padding-left:30px;border-left:2px dashed rgba(92,46,20,.28)"><div class="kicker">Problem 3</div><div class="h3" style="margin:6px 0 10px">비어 있는 평일 오후</div><p class="small">평일 14–17시 좌석 점유율이 20% 아래로 떨어졌습니다.</p></div>
+    </div>
+  </div>
+  <svg class="deco" style="left:0;top:430px;width:90px;height:400px;--r:-15deg"><use href="#fern"/></svg>
+  <svg class="deco" style="left:1070px;top:-60px;width:230px;height:480px;--r:190deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 08 CHART + TEXT ============================== -->
+<div class="meta"><b>08 · Chart + Explanation</b> — 좌측 설명 카드(키커·제목·본문·시사점 박스) + 우측 SVG 누적 막대 차트(다크 배경 위 밝은 톤)</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap kraft" style="left:-60px;top:330px;width:150px;height:480px;--r:4deg"></div>
+  <h2 class="abs display h1 on-dark" style="left:110px;top:56px;color:var(--paper-2)">방문 <span class="mix" style="color:var(--ledger)">패</span>턴 분석</h2>
+  <div class="scrap paper shadow" style="left:90px;top:160px;width:530px;height:504px;--r:-1deg;padding:40px 44px">
+    <div class="kicker">04 · 결과 분석</div>
+    <div class="h2" style="margin:8px 0 14px">요일별 방문 수 (주 평균, 명)</div>
+    <p class="small">개편 이후 <b>평일 방문이 크게 늘었고</b>, 특히 수요일은 22명에서 52명으로 두 배 넘게 증가했습니다. 주말은 원래 많던 방문이 유지됐습니다.</p>
+    <p class="small" style="margin-top:12px">평일 오후 세트가 가장 큰 역할을 했고, 1인석 확대로 혼자 오는 손님의 체류 시간이 늘었습니다.</p>
+    <div class="takeaway" style="margin-top:22px"><b>시사점</b> · 평일 오후 수요는 “없던 것”이 아니라 “앉을 곳과 이유가 없던 것”이었습니다.</div>
+  </div>
+  <svg class="abs" style="left:660px;top:92px" width="560" height="560" viewBox="0 0 560 560" font-family="Arial, sans-serif">
+    <g font-size="15" fill="#F3EBDD"><rect x="70" y="20" width="16" height="16" fill="#FFFDF8"/><text x="94" y="33">개편 전</text><rect x="180" y="20" width="16" height="16" fill="#D8C3A5"/><text x="204" y="33">개편 후 증가분</text></g>
+    <g stroke="rgba(243,235,221,.16)" stroke-width="1">
+      <line x1="60" y1="440" x2="540" y2="440"/><line x1="60" y1="386.7" x2="540" y2="386.7"/><line x1="60" y1="333.3" x2="540" y2="333.3"/>
+      <line x1="60" y1="280" x2="540" y2="280"/><line x1="60" y1="226.7" x2="540" y2="226.7"/><line x1="60" y1="173.3" x2="540" y2="173.3"/><line x1="60" y1="120" x2="540" y2="120"/>
+    </g>
+    <g font-size="14" fill="#CDB295" text-anchor="end"><text x="48" y="445">0</text><text x="48" y="392">10</text><text x="48" y="338">20</text><text x="48" y="285">30</text><text x="48" y="232">40</text><text x="48" y="178">50</text><text x="48" y="125">60</text></g>
+    <!-- 1 unit = 5.333px, baseline y=440 -->
+    <rect x="80"  y="360"   width="58" height="80"    fill="#FFFDF8"/><rect x="80"  y="253.3" width="58" height="106.7" fill="#D8C3A5"/>
+    <rect x="172" y="413.3" width="58" height="26.7"  fill="#FFFDF8"/><rect x="172" y="360"   width="58" height="53.3"  fill="#D8C3A5"/>
+    <rect x="264" y="322.7" width="58" height="117.3" fill="#FFFDF8"/><rect x="264" y="162.7" width="58" height="160"   fill="#D8C3A5"/>
+    <rect x="356" y="370.7" width="58" height="69.3"  fill="#FFFDF8"/><rect x="356" y="317.3" width="58" height="53.3"  fill="#D8C3A5"/>
+    <rect x="448" y="120"   width="58" height="320"   fill="#FFFDF8"/><rect x="448" y="93.3"  width="58" height="26.7"  fill="#D8C3A5"/>
+    <g font-size="15" font-weight="700" fill="#EFD6A0" text-anchor="middle"><text x="109" y="243">35</text><text x="201" y="350">15</text><text x="293" y="152">52</text><text x="385" y="307">23</text><text x="477" y="83">65</text></g>
+    <g font-size="15" fill="#F3EBDD" text-anchor="middle"><text x="109" y="466">월</text><text x="201" y="466">화</text><text x="293" y="466">수</text><text x="385" y="466">목</text><text x="477" y="466">주말</text></g>
+    <text x="60" y="505" font-size="13" fill="#CDB295">* 예시 데이터 · 개편 전 8주 vs 개편 후 8주 평균</text>
+  </svg>
+  <svg class="deco" style="left:1190px;top:430px;width:80px;height:340px;--r:-10deg"><use href="#fern"/></svg>
+</section></div>
+
+<!-- ============================== 09 PROCESS TIMELINE ============================== -->
+<div class="meta"><b>09 · Process Timeline</b> — 점선 연결 원형 번호 4개 + 아래 종이 카드(기간 · 제목 · 설명 · 체크 포인트)</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap kraft" style="left:1030px;top:-70px;width:330px;height:250px;--r:8deg"></div>
+  <div class="scrap ledger" style="left:-40px;top:652px;width:1360px;height:130px;--r:1deg"></div>
+  <div class="abs" style="left:110px;top:48px">
+    <div class="kicker">03 · 실행 계획</div>
+    <h2 class="display h1" style="margin-top:6px">추진 <span class="mix">과</span>정</h2>
+  </div>
+  <div class="abs" style="left:200px;top:236px;width:880px;border-top:3px dashed var(--brown-600)"></div>
+  <span class="num abs" style="left:164px;top:200px;width:72px;height:72px;font-size:24px">1</span>
+  <span class="num abs" style="left:457px;top:200px;width:72px;height:72px;font-size:24px">2</span>
+  <span class="num abs" style="left:751px;top:200px;width:72px;height:72px;font-size:24px">3</span>
+  <span class="num abs" style="left:1044px;top:200px;width:72px;height:72px;font-size:24px">4</span>
+  <div class="scrap paper shadow" style="left:70px;top:300px;width:260px;height:330px;--r:-1.2deg;padding:28px 26px"><span class="chip">1–3주</span><div class="h3" style="margin:12px 0 8px">현황 조사</div><p class="small">방문 기록 3주 수집, 단골 12명 인터뷰</p><hr class="rule" style="margin:14px 0 10px"><p class="caption">✔ 시간대별 점유율<br>✔ 주문 유형 비율</p></div>
+  <div class="scrap paper shadow" style="left:363px;top:300px;width:260px;height:330px;--r:1deg;padding:28px 26px"><span class="chip">4–6주</span><div class="h3" style="margin:12px 0 8px">공간 재배치</div><p class="small">1인석 8석 추가, 창가 좌석 콘센트 설치</p><hr class="rule" style="margin:14px 0 10px"><p class="caption">✔ 좌석 수 26 → 30<br>✔ 공사 없이 가구만 교체</p></div>
+  <div class="scrap paper shadow" style="left:657px;top:300px;width:260px;height:330px;--r:-.8deg;padding:28px 26px"><span class="chip">7–9주</span><div class="h3" style="margin:12px 0 8px">메뉴 개편</div><p class="small">평일 오후 세트, 포장 디저트 4종 출시</p><hr class="rule" style="margin:14px 0 10px"><p class="caption">✔ 원가율 32% 이하 유지<br>✔ 포장 용기 교체</p></div>
+  <div class="scrap paper shadow" style="left:950px;top:300px;width:260px;height:330px;--r:1.2deg;padding:28px 26px"><span class="chip">10–12주</span><div class="h3" style="margin:12px 0 8px">효과 측정</div><p class="small">개편 전후 8주 데이터 비교 분석</p><hr class="rule" style="margin:14px 0 10px"><p class="caption">✔ 체류 시간 · 재방문율<br>✔ 메뉴별 판매량</p></div>
+  <svg class="deco" style="left:1150px;top:-130px;width:150px;height:320px;--r:200deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 10 COMPARISON ============================== -->
+<div class="meta"><b>10 · Before / After Comparison</b> — 제목 종이띠 + 좌(밝은 종이, ✕ 목록) / 우(다크 종이, ● 목록) 2단 비교 + 가운데 화살표</div>
+<div class="stage"><section class="slide bg-kraft">
+  <div class="scrap paper-light shadow" style="left:370px;top:36px;width:540px;height:118px;--r:-1.5deg;padding:26px 0">
+    <h2 class="display center" style="font-size:46px">개선 <span class="mix">전</span> · 후 비교</h2>
+  </div>
+  <div class="scrap paper shadow" style="left:90px;top:190px;width:500px;height:476px;--r:-1deg;padding:38px 42px">
+    <div class="kicker">Before</div><div class="h2" style="margin:6px 0 22px">기존 운영 방식</div>
+    <ul class="list">
+      <li><span class="mark x">✕</span><span>4인 테이블 위주, 1인석 4석뿐</span></li>
+      <li><span class="mark x">✕</span><span>포장 메뉴 3종, 매장용 컵 그대로 사용</span></li>
+      <li><span class="mark x">✕</span><span>시간대와 무관한 단일 메뉴판</span></li>
+      <li><span class="mark x">✕</span><span>평균 체류 31분, 재방문율 22%</span></li>
+    </ul>
+  </div>
+  <div class="scrap dark shadow" style="left:690px;top:190px;width:500px;height:476px;--r:1deg;padding:38px 42px">
+    <div class="kicker">After</div><div class="h2" style="margin:6px 0 22px;color:var(--paper-2)">개선 후 운영 방식</div>
+    <ul class="list">
+      <li><span class="mark o">●</span><span>1인석 12석, 창가 콘센트 좌석 신설</span></li>
+      <li><span class="mark o">●</span><span>포장 전용 디저트 4종, 전용 용기 도입</span></li>
+      <li><span class="mark o">●</span><span>평일 14–17시 오후 세트 메뉴판 분리</span></li>
+      <li><span class="mark o">●</span><span>평균 체류 47분, 재방문율 35%</span></li>
+    </ul>
+  </div>
+  <div class="abs" style="left:598px;top:386px;width:84px;height:84px;border-radius:50%;background:var(--yellow);border:5px solid var(--paper-2);display:grid;place-items:center;font:900 34px var(--font);color:var(--brown-900);box-shadow:0 6px 12px rgba(40,20,5,.3)">→</div>
+  <svg class="deco" style="left:-60px;top:440px;width:200px;height:420px;--r:18deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:1196px;top:390px;width:80px;height:360px;--r:-8deg"><use href="#fern"/></svg>
+</section></div>
+
+<!-- ============================== 11 PHOTO REFERENCES ============================== -->
+<div class="meta"><b>11 · Photo Gallery</b> — 기울어진 제목 종이 + 마스킹테이프 폴라로이드 3장(캡션) · 사진 영역은 실제 이미지로 교체</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap ledger" style="left:-50px;top:-50px;width:540px;height:210px;--r:-4deg"></div>
+  <div class="scrap kraft" style="left:700px;top:570px;width:700px;height:240px;--r:-3deg"></div>
+  <div class="scrap paper shadow" style="left:170px;top:58px;width:440px;height:150px;--r:-2deg;padding:28px 44px">
+    <div class="kicker">Photo References</div>
+    <h2 class="display" style="font-size:52px;margin-top:6px">현장 <span class="mix">사</span>진</h2>
+  </div>
+  <div class="polaroid" style="left:170px;top:268px;width:280px;--r:-5deg"><span class="tape"></span><div class="ph"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-knit"/></svg></div><div class="cap">① 새로 만든 1인석 코너</div></div>
+  <div class="polaroid" style="left:500px;top:246px;width:280px;--r:2deg"><span class="tape"></span><div class="ph"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-flower"/></svg></div><div class="cap">② 평일 오후 세트</div></div>
+  <div class="polaroid" style="left:830px;top:226px;width:280px;--r:5deg"><span class="tape"></span><div class="ph"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-cup"/></svg></div><div class="cap">③ 포장 전용 디저트</div></div>
+  <p class="abs caption" style="left:180px;top:620px;width:480px">사진은 레이아웃 예시용 일러스트입니다. 실제 사진으로 교체해 사용하세요.</p>
+  <svg class="deco" style="left:990px;top:-50px;width:260px;height:540px;--r:12deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:-40px;top:330px;width:210px;height:450px;--r:20deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 12 RESULTS STRIPS ============================== -->
+<div class="meta"><b>12 · Results Strips</b> — 원형 사진 + 가로 종이띠(큰 숫자 · 지표명 · 설명) 3줄, 좌우 번갈아 배치</div>
+<div class="stage"><section class="slide bg-peach">
+  <div class="scrap kraft" style="left:-70px;top:-50px;width:210px;height:830px;--r:3deg"></div>
+  <div class="scrap ledger" style="left:930px;top:560px;width:420px;height:220px;--r:-5deg"></div>
+  <h2 class="abs display h1" style="left:280px;top:50px">주요 <span class="mix">성</span>과</h2>
+  <p class="abs small muted" style="left:620px;top:74px">개편 전 8주 대비 개편 후 8주 (예시 데이터)</p>
+
+  <div class="scrap paper shadow" style="left:280px;top:176px;width:770px;height:118px;--r:-.8deg;padding:0 40px 0 120px;display:flex;align-items:center;gap:30px">
+    <div class="display" style="font-size:52px;width:170px;white-space:nowrap">+16<span class="mix">분</span></div>
+    <div><div class="h3">평균 체류 시간</div><p class="small muted">31분 → 47분. 1인석과 콘센트 좌석 이용 손님이 가장 오래 머물렀습니다.</p></div>
+  </div>
+  <div class="circle" style="left:190px;top:166px;width:138px;height:138px"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-cup"/></svg></div>
+
+  <div class="scrap paper shadow" style="left:200px;top:336px;width:770px;height:118px;--r:.8deg;padding:0 120px 0 40px;display:flex;align-items:center;gap:30px">
+    <div class="display" style="font-size:52px;width:170px">+13<span class="mix">%p</span></div>
+    <div><div class="h3">재방문율</div><p class="small muted">22% → 35%. 평일 오후 세트를 산 손님의 절반이 2주 안에 다시 왔습니다.</p></div>
+  </div>
+  <div class="circle" style="left:900px;top:326px;width:138px;height:138px"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-knit"/></svg></div>
+
+  <div class="scrap paper shadow" style="left:280px;top:496px;width:770px;height:118px;--r:-.6deg;padding:0 40px 0 120px;display:flex;align-items:center;gap:30px">
+    <div class="display" style="font-size:52px;width:170px">×1.8</div>
+    <div><div class="h3">포장 매출</div><p class="small muted">포장 전용 디저트 출시 후 포장 매출이 1.8배로 늘었습니다.</p></div>
+  </div>
+  <div class="circle" style="left:190px;top:486px;width:138px;height:138px"><svg viewBox="0 0 240 180" preserveAspectRatio="xMidYMid slice"><use href="#ph-flower"/></svg></div>
+
+  <svg class="deco" style="left:30px;top:30px;width:90px;height:390px;--r:5deg"><use href="#fern"/></svg>
+  <svg class="deco" style="left:1070px;top:40px;width:220px;height:460px;--r:-10deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 13 TABLE ============================== -->
+<div class="meta"><b>13 · Data Table</b> — 크라프트 배경 + 대형 종이 카드 안 표(다크 헤더 · 점선 행 구분 · 증감 색상 · 칩)</div>
+<div class="stage"><section class="slide bg-kraft">
+  <div class="scrap paper shadow" style="left:90px;top:54px;width:1100px;height:612px;--r:-.4deg;padding:42px 56px">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px">
+      <div><div class="kicker">04 · 결과 분석</div><h2 class="display" style="font-size:46px;margin-top:6px">메뉴별 <span class="mix">성</span>과 요약</h2></div>
+      <p class="caption" style="margin:0 0 6px">단위: 잔/개 · 8주 합계 · 예시 데이터</p>
+    </div>
+    <table class="table">
+      <thead><tr><th>메뉴</th><th class="r">개편 전</th><th class="r">개편 후</th><th class="r">증감</th><th class="r">만족도</th><th>비고</th></tr></thead>
+      <tbody>
+        <tr><td><b>아메리카노</b></td><td class="r">1,240</td><td class="r">1,310</td><td class="r up">▲ 5.6%</td><td class="r">4.2</td><td>기존 유지</td></tr>
+        <tr><td><b>평일 오후 세트</b></td><td class="r">—</td><td class="r">486</td><td class="r up">신규</td><td class="r">4.7</td><td><span class="chip">베스트</span></td></tr>
+        <tr><td><b>포장 디저트 (4종)</b></td><td class="r">—</td><td class="r">702</td><td class="r up">신규</td><td class="r">4.5</td><td>포장 매출 견인</td></tr>
+        <tr><td><b>카페라테</b></td><td class="r">860</td><td class="r">905</td><td class="r up">▲ 5.2%</td><td class="r">4.3</td><td>기존 유지</td></tr>
+        <tr><td><b>생과일 주스</b></td><td class="r">310</td><td class="r">248</td><td class="r down">▼ 20.0%</td><td class="r">3.6</td><td>계절 메뉴로 전환 검토</td></tr>
+        <tr><td><b>조각 케이크</b></td><td class="r">420</td><td class="r">395</td><td class="r down">▼ 6.0%</td><td class="r">4.0</td><td>포장 디저트와 겹침</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <svg class="deco" style="left:1150px;top:380px;width:180px;height:380px;--r:-14deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:10px;top:440px;width:90px;height:380px;--r:-12deg"><use href="#fern"/></svg>
+</section></div>
+
+<!-- ============================== 14 REFERENCES ============================== -->
+<div class="meta"><b>14 · References</b> — 다크 배경 + 세로 종이 카드 안 번호 붙은 출처 목록(저자 · 제목 · 발행처 · 연도)</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap kraft" style="left:-40px;top:560px;width:1360px;height:230px;--r:-2deg"></div>
+  <div class="scrap paper shadow" style="left:200px;top:62px;width:800px;height:594px;--r:-1deg;padding:46px 64px">
+    <h2 class="display h1 center">참고 <span class="mix">자</span>료</h2>
+    <hr class="rule" style="margin:22px 0 26px">
+    <ol class="small" style="margin:0;padding-left:26px;line-height:1.7">
+      <li style="margin-bottom:14px"><b>소상공인시장진흥공단</b> (2026). 「골목상권 카페 업종 동향 보고서」.</li>
+      <li style="margin-bottom:14px"><b>김OO · 이OO</b> (2025). 1인 고객의 공간 이용 행태와 체류 시간. 『서비스경영학회지』, 26(3), 45–67.</li>
+      <li style="margin-bottom:14px"><b>한국농수산식품유통공사</b> (2026). 「외식 소비 행태 조사」.</li>
+      <li style="margin-bottom:14px"><b>팀 브라운</b> (2026). 방문 기록 및 고객 인터뷰 원자료 (내부 자료).</li>
+      <li><b>Oldenburg, R.</b> (1989). <i>The Great Good Place</i>. Paragon House.</li>
+    </ol>
+    <p class="caption center" style="margin-top:22px">* 레이아웃 예시용 출처입니다. 실제 발표에서는 사용한 자료로 교체하세요.</p>
+  </div>
+  <svg class="deco" style="left:-10px;top:50px;width:230px;height:480px;--r:12deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:970px;top:240px;width:260px;height:540px;--r:-12deg"><use href="#sprig"/></svg>
+</section></div>
+
+<!-- ============================== 15 CLOSING ============================== -->
+<div class="meta"><b>15 · Closing</b> — 크라프트 우측 + 대형 종이 카드(초대형 인사말 · Q&amp;A · 연락처) + 카드 오른쪽을 덮는 큰 압화</div>
+<div class="stage"><section class="slide bg-brown">
+  <div class="scrap kraft" style="left:790px;top:-50px;width:560px;height:820px;--r:4deg"></div>
+  <div class="scrap paper shadow" style="left:110px;top:84px;width:960px;height:552px;--r:-1deg;padding:76px 90px">
+    <h2 class="display" style="font-size:124px;line-height:1"><span class="mix">감</span>사<br>합니<span class="mix">다</span></h2>
+    <hr class="rule" style="margin:34px 0 22px;width:460px">
+    <div class="kicker">Q &amp; A</div>
+    <p class="small" style="margin-top:8px">궁금한 점을 편하게 질문해 주세요 &nbsp;·&nbsp; team.brown@example.com</p>
+  </div>
+  <svg class="deco" style="left:800px;top:110px;width:320px;height:660px;--r:-6deg"><use href="#sprig"/></svg>
+  <svg class="deco" style="left:1140px;top:320px;width:100px;height:440px;--r:10deg"><use href="#fern"/></svg>
+</section></div>
+
+</div>
+
+<script>
+  // 슬라이드를 화면 폭에 맞춰 축소 (원본 좌표는 1280×720 유지)
+  function fit(){document.querySelectorAll('.stage').forEach(s=>s.style.setProperty('--k',s.clientWidth/1280))}
+  addEventListener('resize',fit); fit();
+</script>
+</body>
+</html>

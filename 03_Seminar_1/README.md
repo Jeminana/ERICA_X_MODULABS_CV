@@ -1,82 +1,61 @@
-\# Peer Review Templete
+# Seminar 1 — Claude AI 에이전트 실습 회고
 
-\- 코더 : 코더의 이름을 작성하세요.
+# Seminar 1 — Claude AI Agent Practice Retrospective
 
-\- 리뷰어 : 리뷰어의 이름을 작성하세요.
+## 개요
 
+이번 세미나에서는 Claude AI 에이전트의 구현 방법을 더 깊이 있게 배웠습니다. 필수 시스템과 소프트웨어를 설치하는 것부터 시작해, 실제 업무와 프로젝트에 활용도를 높이기 위한 AI 에이전트 프롬프트 실습까지 진행했습니다.
 
+## Overview
 
+In this seminar, we learned Claude AI agent implementation in more depth. We started by installing all the required systems and software, and went on to practice AI agent prompting to improve its usage in real-world applications.
 
+---
 
-\# PRT(Peer Review Template)
+## 1. 프롬프트로 게임 및 웹사이트 만들기
 
-\- \[ ]  \*\*1. 주어진 문제를 해결하는 완성된 코드가 제출되었나요?\*\*
+먼저 Claude에게 프롬프트를 작성하여 테트리스(`tetris/`)와 스네이크 게임(`snake_game/`) 등 여러 게임을 만드는 실습을 했습니다. 이후에는 이력서를 작성하고, 이를 웹사이트(`web/`)로 제작했습니다.
 
-&#x20;   - 문제에서 요구하는 최종 결과물이 첨부되었는지 확인
+## 1. Building Games and a Website with Prompts
 
-&#x20;       - 중요! 해당 조건을 만족하는 부분을 캡쳐해 근거로 첨부
+First, we practiced prompting Claude to build several games: Tetris (`tetris/`) and a Snake game (`snake_game/`). After that, we wrote a resume and turned it into a website (`web/`).
 
-&#x20;   
+---
 
-\- \[ ]  \*\*2. 전체 코드에서 가장 핵심적이거나 가장 복잡하고 이해하기 어려운 부분에 작성된 
+## 2. MCP (Model Context Protocol)
 
-주석 또는 doc string을 보고 해당 코드가 잘 이해되었나요?\*\*
+다음으로 MCP(Model Context Protocol)를 적용하는 방법을 배웠습니다. MCP는 AI를 외부 웹사이트, 데이터 소스, 워크플로우와 연결해 주는 커넥터 역할을 합니다. 이번 실습에서는 Playwright 도구를 사용했습니다(`MCP/`).
 
-&#x20;   - 해당 코드 블럭을 왜 핵심적이라고 생각하는지 확인
+## 2. MCP (Model Context Protocol)
 
-&#x20;   - 해당 코드 블럭에 doc string/annotation이 달려 있는지 확인
+Next, we learned how to apply the Model Context Protocol (MCP), which acts as a connector that links the AI to external websites, data sources, and workflows. For this practice, we used the Playwright tool (`MCP/`).
 
-&#x20;   - 해당 코드의 기능, 존재 이유, 작동 원리 등을 기술했는지 확인
+---
 
-&#x20;   - 주석을 보고 코드 이해가 잘 되었는지 확인
+## 3. Skill
 
-&#x20;       - 중요! 잘 작성되었다고 생각되는 부분을 캡쳐해 근거로 첨부
+마지막으로 Skill 사용법을 배웠습니다. Skill은 AI 프로그램에게 특정 작업을 수행하는 방법을 가르치는 모듈형 지침입니다. 한 번 만들어 두면 같은 작업을 매번 설명하지 않고도 일관된 결과를 얻을 수 있어, 반복적인 업무를 자동화하는 데 매우 유용합니다(`skill-python/`).
 
-&#x20;       
+## 3. Skills
 
-\- \[ ]  \*\*3. 에러가 난 부분을 디버깅하여 문제를 해결한 기록을 남겼거나
+Last but not least, we learned how to use Skills, which are modular instructions that teach AI programs how to perform specific tasks. Once a skill is created, the same task can be done consistently without explaining it every time, which makes skills very useful for automating repetitive work (`skill-python/`).
 
-새로운 시도 또는 추가 실험을 수행해보았나요?\*\*
+---
 
-&#x20;   - 문제 원인 및 해결 과정을 잘 기록하였는지 확인
+## 어려웠던 점
 
-&#x20;   - 프로젝트 평가 기준에 더해 추가적으로 수행한 나만의 시도, 
+Claude를 사용해 이렇게 많은 작업을 처리해 본 것은 처음이었기 때문에, 처음에는 꽤 헷갈리는 부분이 많았습니다.
 
-&#x20;   실험이 기록되어 있는지 확인
+## Challenges
 
-&#x20;       - 중요! 잘 작성되었다고 생각되는 부분을 캡쳐해 근거로 첨부
+Since this was my first time handling this many tasks with Claude, it was quite confusing at first.
 
-&#x20;       
+---
 
-\- \[ ]  \*\*4. 회고를 잘 작성했나요?\*\*
+## 앞으로의 계획
 
-&#x20;   - 주어진 문제를 해결하는 완성된 코드 내지 프로젝트 결과물에 대해
+앞으로는 Claude를 더 효율적으로 활용하여 제 업무와 프로젝트의 완성도를 높여 나가고자 합니다.
 
-&#x20;   배운점과 아쉬운점, 느낀점 등이 기록되어 있는지 확인
+## Future Plans
 
-&#x20;   - 전체 코드 실행 플로우를 그래프로 그려서 이해를 돕고 있는지 확인
-
-&#x20;       - 중요! 잘 작성되었다고 생각되는 부분을 캡쳐해 근거로 첨부
-
-&#x20;       
-
-\- \[ ]  \*\*5. 코드가 간결하고 효율적인가요?\*\*
-
-&#x20;   - 파이썬 스타일 가이드 (PEP8) 를 준수하였는지 확인
-
-&#x20;   - 코드 중복을 최소화하고 범용적으로 사용할 수 있도록 함수화/모듈화했는지 확인
-
-&#x20;       - 중요! 잘 작성되었다고 생각되는 부분을 캡쳐해 근거로 첨부
-
-
-
-
-
-\# 리뷰어 회고(참고 링크 및 코드 개선 제안)
-
-&#x20;   # 리뷰어의 회고를 작성합니다.
-
-&#x20;   # 코드 리뷰 시 참고한 링크가 있다면 링크와 간략한 설명을 첨부합니다.
-
-&#x20;   # 코드 리뷰를 통해 개선한 코드가 있다면 코드와 간략한 설명을 첨부합니다.
-
+In the future, I will try to use Claude more efficiently to improve my work and projects.
