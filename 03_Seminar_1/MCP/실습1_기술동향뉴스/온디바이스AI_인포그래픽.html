@@ -1,0 +1,231 @@
+<title>온디바이스 AI 성숙도 지도</title>
+<meta name="description" content="2026년 8~9월 온디바이스 AI 기술 뉴스 5건을 기술 성숙도(TRL) 기준으로 정리한 인포그래픽">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+  :root {
+    --ground: #FFFFFF;
+    --blue: #0B2E6F;
+    --blue-soft: #3D5E9E;
+    --ink: #14203A;
+    --slate: #5B6784;
+    --rule: #DCE3F0;
+    --tint: #EEF3FB;
+    --sans: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font: 400 15px/1.7 var(--sans);
+    padding: 0 20px;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; padding-block: 56px 72px; display: grid; gap: 56px; }
+
+  /* Header */
+  header { display: grid; gap: 14px; }
+  .eyebrow {
+    font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--blue-soft);
+  }
+  h1 {
+    margin: 0; font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.2;
+    letter-spacing: -.02em; color: var(--blue); text-wrap: balance;
+  }
+  .lede { margin: 0; max-width: 62ch; color: var(--slate); }
+
+  /* TRL map */
+  .map { display: grid; gap: 18px; }
+  .map h2, .list-head h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--ink); }
+  .map-note { margin: 0; font-size: 13px; color: var(--slate); }
+  .scroller { overflow-x: auto; padding-inline: 48px; }
+  .chart { position: relative; min-width: 640px; height: 250px; }
+  .bands { position: absolute; left: 0; right: 0; top: 84px; height: 56px; display: grid; grid-template-columns: 3fr 3fr 3fr; }
+  .band { border-left: 1px solid var(--ground); padding: 8px 10px; font-size: 12px; font-weight: 500; }
+  .band:nth-child(1) { background: var(--tint); color: var(--blue-soft); }
+  .band:nth-child(2) { background: #D6E1F3; color: var(--blue); }
+  .band:nth-child(3) { background: var(--blue); color: #FFFFFF; }
+  .ticks { position: absolute; left: 0; right: 0; top: 146px; display: grid; grid-template-columns: repeat(9, 1fr); }
+  .ticks span { text-align: center; font: 400 12px/1 var(--mono); color: var(--slate); font-variant-numeric: tabular-nums; }
+  .pin { position: absolute; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pin a {
+    font-size: 13px; font-weight: 700; color: var(--blue); text-decoration: none; white-space: nowrap;
+    background: var(--ground); padding: 2px 6px; border-radius: 3px;
+  }
+  .pin a:hover, .pin a:focus-visible { text-decoration: underline; }
+  .pin .stem { width: 1px; background: var(--blue); }
+  .pin .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--ground); border: 3px solid var(--blue); }
+  .pin.up { bottom: calc(250px - 112px - 6px); flex-direction: column; }
+  .pin.down { top: calc(112px - 6px); flex-direction: column-reverse; }
+  .pin.up .stem { height: 34px; }
+  .pin.down .stem { height: 84px; }
+
+  /* Article list */
+  .list { display: grid; gap: 0; }
+  .list-head { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; padding-bottom: 14px; border-bottom: 2px solid var(--blue); }
+  .list-head span { font: 400 12px/1 var(--mono); color: var(--slate); }
+  article {
+    display: grid; grid-template-columns: 150px 1fr; gap: 28px;
+    padding-block: 28px; border-bottom: 1px solid var(--rule);
+  }
+  .meta { display: grid; gap: 12px; align-content: start; }
+  .tag {
+    justify-self: start; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; line-height: 1.4;
+  }
+  .tag.t-research { background: var(--tint); color: var(--blue-soft); }
+  .tag.t-proto { background: #D6E1F3; color: var(--blue); }
+  .tag.t-market { background: var(--blue); color: #FFFFFF; }
+  .gauge { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; width: 120px; }
+  .gauge i { height: 8px; background: var(--rule); border-radius: 1px; }
+  .gauge i.on { background: var(--blue); }
+  .trl { font: 600 13px/1 var(--mono); color: var(--blue); font-variant-numeric: tabular-nums; }
+  .src { font: 400 12px/1.5 var(--mono); color: var(--slate); }
+  .body { display: grid; gap: 10px; min-width: 0; }
+  .body h3 { margin: 0; font-size: 19px; line-height: 1.45; font-weight: 700; text-wrap: balance; }
+  .body h3 a { color: var(--ink); text-decoration: none; background-image: linear-gradient(var(--blue), var(--blue)); background-size: 0 2px; background-position: 0 100%; background-repeat: no-repeat; transition: background-size .25s, color .25s; }
+  .body h3 a:hover, .body h3 a:focus-visible { color: var(--blue); background-size: 100% 2px; }
+  .body h3 a::after { content: " ↗"; font-size: .75em; color: var(--blue-soft); }
+  .body ol { margin: 0; padding-left: 1.2em; max-width: 68ch; color: #2E3A55; }
+  .body li + li { margin-top: 4px; }
+  .why { margin: 0; font-size: 13px; color: var(--slate); }
+  .why b { color: var(--blue); font-weight: 500; }
+  a:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+
+  footer { font-size: 12px; color: var(--slate); display: grid; gap: 4px; border-top: 1px solid var(--rule); padding-top: 18px; }
+
+  @media (max-width: 640px) {
+    .wrap { padding-block: 36px 56px; gap: 44px; }
+    article { grid-template-columns: 1fr; gap: 14px; }
+    .meta { grid-template-columns: auto auto; align-items: center; justify-content: start; column-gap: 14px; }
+    .src { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Tech Trend Brief · 2026.08.15 – 09.15</div>
+    <h1>온디바이스 AI, 연구실에서 셋톱박스까지</h1>
+    <p class="lede">최근 한 달 온디바이스 AI 기술 뉴스 5건을 기술 성숙도(TRL, Technology Readiness Level 1–9) 기준으로 배치했습니다. 소자 연구부터 상용 서비스 출시까지, 같은 키워드가 서로 다른 단계에서 움직이고 있습니다.</p>
+  </header>
+
+  <section class="map" aria-label="기술 성숙도 지도">
+    <h2>기술 성숙도 지도</h2>
+    <div class="scroller">
+      <div class="chart">
+        <div class="bands" aria-hidden="true">
+          <div class="band">연구 단계 · TRL 1–3</div>
+          <div class="band">개발·실증 · TRL 4–6</div>
+          <div class="band">상용화 · TRL 7–9</div>
+        </div>
+        <div class="ticks" aria-hidden="true">
+          <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span>
+        </div>
+        <!-- left = (TRL - 0.5) / 9 -->
+        <div class="pin up" style="left: 27.78%"><a href="https://www.wikitree.co.kr/articles/1152812" target="_blank" rel="noopener">KAIST 뉴로모픽 뉴런</a><span class="stem"></span><span class="dot"></span></div>
+        <div class="pin down" style="left: 38.89%"><a href="https://magazine.hankyung.com/business/article/202609155217b" target="_blank" rel="noopener">인텔렉투스 NPU 미들웨어</a><span class="stem"></span><span class="dot"></span></div>
+        <div class="pin up" style="left: 61.11%"><a href="https://www.itdaily.kr/news/articleView.html?idxno=241611" target="_blank" rel="noopener">KT 셋톱박스 AI</a><span class="stem"></span><span class="dot"></span></div>
+        <div class="pin down" style="left: 83.33%"><a href="https://www.edaily.co.kr/News/Read?newsId=02765046645580120&amp;mediaCodeNo=257" target="_blank" rel="noopener">딥엑스 DX-M1</a><span class="stem"></span><span class="dot"></span></div>
+        <div class="pin up" style="left: 94.44%"><a href="https://www.jnilbo.com/news/articleView.html?idxno=90000065466" target="_blank" rel="noopener">애플 시리 AI</a><span class="stem"></span><span class="dot"></span></div>
+      </div>
+    </div>
+    <p class="map-note">TRL은 기사에 공개된 사실(연구 발표·과제 선정·전시 시연·인증 제품·출시 일정)을 근거로 한 편집 추정치입니다.</p>
+  </section>
+
+  <section class="list" aria-label="뉴스 목록">
+    <div class="list-head"><h2>뉴스 5선 · 성숙도 높은 순</h2><span>제목을 누르면 원문 기사로 이동합니다</span></div>
+
+    <article>
+      <div class="meta">
+        <span class="tag t-market">상용화</span>
+        <div><div class="trl">TRL 9</div><div class="gauge" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div></div>
+        <div class="src">2026.09.15<br>전남일보</div>
+      </div>
+      <div class="body">
+        <h3><a href="https://www.jnilbo.com/news/articleView.html?idxno=90000065466" target="_blank" rel="noopener">"개인정보 유출 차단 온디바이스 AI"…애플 '시리 AI' 10월 한국어 상륙</a></h3>
+        <ol>
+          <li>애플이 온디바이스 연산과 프라이빗 클라우드 컴퓨트를 결합해 사용자 정보가 저장·유출되지 않도록 설계한 '시리 AI'를 공개했다.</li>
+          <li>영어 베타가 먼저 제공되고, 한국어 지원은 10월부터 시작된다.</li>
+          <li>아이폰 16 이후 모델과 M1 이상 맥·아이패드에서 이용할 수 있다.</li>
+        </ol>
+        <p class="why"><b>판단 근거</b> 지원 기기와 출시 일정이 확정된 소비자 서비스</p>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <span class="tag t-market">상용화</span>
+        <div><div class="trl">TRL 8</div><div class="gauge" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></div></div>
+        <div class="src">2026.09.14<br>이데일리</div>
+      </div>
+      <div class="body">
+        <h3><a href="https://www.edaily.co.kr/News/Read?newsId=02765046645580120&amp;mediaCodeNo=257" target="_blank" rel="noopener">AI 전력 부담 커지는데…딥엑스, 저전력 AI 반도체 '녹색기술' 인증</a></h3>
+        <ol>
+          <li>딥엑스의 저전력 AI 추론 기술이 정부 녹색기술 인증을 받았다.</li>
+          <li>한국산업기술시험원 시험에서 전력 소모를 최대 26% 줄이고, 동작 온도를 비교 제품보다 20도 이상 낮췄다.</li>
+          <li>DX-M1·DX-H1 기반 AI 가속 모듈 4종도 녹색기술제품 확인을 받아 로봇·자동차 등 현장 적용이 확대된다.</li>
+        </ol>
+        <p class="why"><b>판단 근거</b> 상용 NPU 제품이 공인 시험·인증을 통과</p>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <span class="tag t-proto">개발·실증</span>
+        <div><div class="trl">TRL 6</div><div class="gauge" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div></div>
+        <div class="src">2026.09.15<br>아이티데일리</div>
+      </div>
+      <div class="body">
+        <h3><a href="https://www.itdaily.kr/news/articleView.html?idxno=241611" target="_blank" rel="noopener">KT는 AI, LG U+는 디바이스…글로벌 미디어 시장 정조준</a></h3>
+        <ol>
+          <li>KT가 IBC 2026(암스테르담)에서 AI 에이전트, 온디바이스 AI 등 AI 기반 미디어 솔루션을 공개했다.</li>
+          <li>온디바이스 AI는 클라우드 연결 없이 셋톱박스 안에서 AI 모델을 직접 구동한다.</li>
+          <li>이를 통해 영상·음성 품질을 실시간으로 최적화하고 안정적인 시청 환경을 제공한다.</li>
+        </ol>
+        <p class="why"><b>판단 근거</b> 국제 전시회에서 실제 단말 기반 시연, 해외 사업화 논의 단계</p>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <span class="tag t-proto">개발·실증</span>
+        <div><div class="trl">TRL 4</div><div class="gauge" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="src">2026.09.15<br>한경비즈니스</div>
+      </div>
+      <div class="body">
+        <h3><a href="https://magazine.hankyung.com/business/article/202609155217b" target="_blank" rel="noopener">인텔렉투스, 'K-온디바이스 AI반도체 기술개발사업' 휴머노이드 분야 수행기관 선정</a></h3>
+        <ol>
+          <li>인텔렉투스가 산업통상자원부 'K-온디바이스 AI반도체 기술개발사업' 휴머노이드 분야 수행기관으로 선정됐다.</li>
+          <li>국산 NPU와 로봇지능 실행환경을 연결하는 표준 기반 통신 미들웨어를 개발해 피지컬 AI 적용을 지원한다.</li>
+          <li>정부는 2025~2030년 자동차·IoT·로봇·방산 등 주력산업 특화 국산 AI반도체 생태계를 구축할 계획이다.</li>
+        </ol>
+        <p class="why"><b>판단 근거</b> 국책 R&amp;D 과제로 개발이 막 시작된 단계</p>
+      </div>
+    </article>
+
+    <article>
+      <div class="meta">
+        <span class="tag t-research">연구 단계</span>
+        <div><div class="trl">TRL 3</div><div class="gauge" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="src">2026.08.16<br>위키트리</div>
+      </div>
+      <div class="body">
+        <h3><a href="https://www.wikitree.co.kr/articles/1152812" target="_blank" rel="noopener">KAIST, 반도체 잡음 없애는 대신 조절해 활용…동작인식 94.8%·음성인식 95.0%</a></h3>
+        <ol>
+          <li>KAIST 연구진이 반도체 잡음을 제거하지 않고 조절 가능한 정보처리 자원으로 활용하는 멤리스터 기반 뉴로모픽 뉴런을 개발했다.</li>
+          <li>저항 상태를 조절해 하나의 회로로 느린 동작 신호(인식률 94.8%)와 빠른 음성 신호(95.0%)를 선택적으로 처리한다.</li>
+          <li>센서 단에서 주파수 특징을 추출해 데이터 전송·연산 부담을 줄여 웨어러블 등 온디바이스 AI에 활용 가능하다.</li>
+        </ol>
+        <p class="why"><b>판단 근거</b> 소자 수준 원리 검증을 논문으로 발표한 단계</p>
+      </div>
+    </article>
+  </section>
+
+  <footer>
+    <span>출처: 네이버 뉴스 검색 "온디바이스 AI" (기간 1개월) · 각 기사 원문 · Playwright MCP로 수집</span>
+    <span>원본 데이터: 온디바이스AI_뉴스_2026-09.xlsx</span>
+  </footer>
+</div>
