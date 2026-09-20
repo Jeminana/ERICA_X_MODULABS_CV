@@ -1,0 +1,20 @@
+# YOLO training / prediction outputs
+runs/
+*.pt
+
+# Datasets (download with Roboflow instead of committing)
+datasets/
+stamp-*/
+
+# Generated images
+bus_crops/
+predicted*.jpg
+bus.jpg
+
+# Secrets & environment
+.env
+*.key
+
+# Jupyter / Python clutter
+.ipynb_checkpoints/
+__pycache__/
